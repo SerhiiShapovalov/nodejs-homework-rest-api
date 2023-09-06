@@ -1,15 +1,10 @@
 const express = require("express");
-
 const contactsController = require("../../controllers/contacts-controller");
-
 const schemas = require("../../schemas/contacts-schemas");
-
 const { validateBody } = require("../../decorators");
-
 const router = express.Router();
 
 router.get("/", contactsController.getAllContacts);
-
 router.get("/:id", contactsController.getContactById);
 
 router.post(
@@ -22,7 +17,7 @@ router.delete("/:id", contactsController.removeContact);
 
 router.put(
   "/:id",
-  validateBody(schemas.contactAddSchema),
+  validateBody(schemas.contactUpdateSchema),
   contactsController.updateContact
 );
 
