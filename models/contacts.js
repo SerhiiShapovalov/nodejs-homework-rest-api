@@ -1,14 +1,76 @@
-// const fs = require('fs/promises')
+const fs = require("fs/promises");
+const path = require("path");
+const { randomUUID } = require("crypto");
 
-const listContacts = async () => {}
+const contactsPath = path.join(__dirname, "contacts.json");
 
-const getContactById = async (contactId) => {}
+const updateContacts = async (contacts) => {
+  return await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
+};
 
-const removeContact = async (contactId) => {}
+const listContacts = async () => {
+  return JSON.parse(await fs.readFile(contactsPath));
+};
 
-const addContact = async (body) => {}
+const getContactById = async (id) => {
+  const contacts = await listContacts();
+  const contact = contacts.find((contact) => contact.id === id);
 
-const updateContact = async (contactId, body) => {}
+  return contact || null;
+};
+
+const removeContact = async (id) => {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((contact) => contact.id === id);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const [result] = contacts.splice(index, 1);
+  await updateContacts(contacts);
+  return result;
+};
+
+const updateContact = async (id, body) => {
+  const contacts = await listContacts();
+  const index = contacts.findIndex((contact) => contact.id === id);
+
+  if (index === -1) {
+    return null;
+  }
+
+  const updatedFields = {};
+  if (body.name !== undefined) {
+    updatedFields.name = body.name;
+  }
+  if (body.email !== undefined) {
+    updatedFields.email = body.email;
+  }
+  if (body.phone !== undefined) {
+    updatedFields.phone = body.phone;
+  }
+
+  contacts[index] = {
+    ...contacts[index],
+    ...updatedFields,
+  };
+
+  await updateContacts(contacts);
+  return contacts[index];
+};
+
+const addContact = async (body) => {
+  const contacts = await listContacts();
+  const newContact = {
+    id: randomUUID(),
+    ...body,
+  };
+
+  contacts.push(newContact);
+  await updateContacts(contacts);
+  return newContact;
+};
 
 module.exports = {
   listContacts,
@@ -16,4 +78,4 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-}
+};
