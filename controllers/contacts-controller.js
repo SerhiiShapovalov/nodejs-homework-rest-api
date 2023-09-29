@@ -33,7 +33,7 @@ const addContact = async (req, res) => {
   const { body } = req;
   const { _id: owner } = req.user;
   const result = await Contact.create({ ...body, owner });
-  res.status(200).json(result);
+  res.status(201).json(result);
 };
 
 const updateContact = async (req, res) => {
